@@ -1,4 +1,3 @@
-// --- Backend: Express + MongoDB + ExcelJS ---
 const express = require("express");
 const mongoose = require("mongoose");
 const multer = require("multer");
@@ -27,9 +26,8 @@ const contactSchema = new mongoose.Schema({
   name: String,
   email: String,
   message: String,
-  createdAt: { type: Date, default: Date.now }
+  createdAt: { type: Date, default: Date.now },
 });
-
 const doctorSchema = new mongoose.Schema({
   name: String,
   email: String,
@@ -37,7 +35,6 @@ const doctorSchema = new mongoose.Schema({
   profilePicture: String,
   createdAt: { type: Date, default: Date.now },
 });
-
 const patientSchema = new mongoose.Schema({
   name: String,
   age: Number,
@@ -55,56 +52,56 @@ const Patient = mongoose.model("Patient", patientSchema);
 app.use(express.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(express.static("public"));
-app.use(session({
-  secret: "secretkey",
-  resave: false,
-  saveUninitialized: false,
-}));
+app.use(
+  session({
+    secret: "secretkey",
+    resave: false,
+    saveUninitialized: false,
+  })
+);
 
 // Multer Setup
 const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, uploadDir);
-  },
-  filename: function (req, file, cb) {
-    cb(null, Date.now() + "-" + file.originalname);
-  }
+  destination: (req, file, cb) => cb(null, uploadDir),
+  filename: (req, file, cb) => cb(null, Date.now() + "-" + file.originalname),
 });
 const upload = multer({ storage });
 
 // Routes
-
 app.get("/", (req, res) => {
-  res.sendFile(path.join(__dirname, "public/index.html"));
+  const html = fs.readFileSync(path.resolve(__dirname, "public/index.html"), "utf-8");
+  res.send(html);
 });
 
 app.get("/register", (req, res) => {
-  res.sendFile(path.join(__dirname, "public/register.html"));
+  const html = fs.readFileSync(path.resolve(__dirname, "public/register.html"), "utf-8");
+  res.send(html);
 });
 
 app.post("/register", async (req, res) => {
   const { name, email, password } = req.body;
-  if (!name || !email || !password) {
-    return res.send("All fields are required. <a href='/register'>Go back</a>");
-  }
-  const existingDoctor = await Doctor.findOne({ email });
-  if (existingDoctor) {
+  if (!name || !email || !password)
+    return res.send("All fields required. <a href='/register'>Go back</a>");
+
+  const existing = await Doctor.findOne({ email });
+  if (existing)
     return res.send("Email already registered. <a href='/login'>Login</a>");
-  }
+
   await new Doctor({ name, email, password }).save();
   res.send("Registration successful! <a href='/login'>Login</a>");
 });
 
 app.get("/login", (req, res) => {
-  res.sendFile(path.join(__dirname, "public/login.html"));
+  const html = fs.readFileSync(path.resolve(__dirname, "public/login.html"), "utf-8");
+  res.send(html);
 });
 
 app.post("/login", async (req, res) => {
   const { email, password } = req.body;
   const doctor = await Doctor.findOne({ email, password });
-  if (!doctor) {
+  if (!doctor)
     return res.send("Invalid credentials. <a href='/login'>Try again</a>");
-  }
+
   req.session.doctorId = doctor._id;
   res.redirect("/dashboard");
 });
@@ -115,71 +112,70 @@ app.get("/dashboard", async (req, res) => {
   const doctor = await Doctor.findById(req.session.doctorId);
   const patients = await Patient.find({ doctorId: doctor._id });
 
-  const patientListHTML = patients.map((p, i) => `
-    <tr class="text-center">
-      <td class="py-1 px-2 border">${i + 1}</td>
-      <td class="py-1 px-2 border">${p.name}</td>
-      <td class="py-1 px-2 border">${p.age}</td>
-      <td class="py-1 px-2 border">${p.disease}</td>
-      <td class="py-1 px-2 border">${p.createdAt.toLocaleString()}</td>
-    </tr>`).join("");
+  const rows = patients
+    .map(
+      (p, i) => `
+      <tr class="text-center">
+        <td class="py-1 px-2 border">${i + 1}</td>
+        <td class="py-1 px-2 border">${p.name}</td>
+        <td class="py-1 px-2 border">${p.age}</td>
+        <td class="py-1 px-2 border">${p.disease}</td>
+        <td class="py-1 px-2 border">${p.createdAt.toLocaleString()}</td>
+      </tr>`
+    )
+    .join("");
 
   res.send(`
-    <!DOCTYPE html>
-    <html>
-    <head>
-      <title>Dashboard</title>
-      <script src="https://cdn.tailwindcss.com"></script>
-    </head>
-    <body class="bg-gray-100">
-      <nav class="bg-blue-600 text-white p-4 flex justify-between">
-        <div class="text-xl font-bold">DASHBOARD</div>
-        <div>
-          <a href="/" class="mx-2">Home</a>
-          <a href="/contact.html" class="mx-2">Contact Us</a>
-        </div>
-      </nav>
-
-      <div class="bg-white p-6 shadow rounded mb-4 flex justify-between">
-        <div>
-          <h2 class="text-2xl font-bold">Welcome, Dr. ${doctor.name}</h2>
-          <p>Email: ${doctor.email}</p>
-          <p>Registered on: ${doctor.createdAt.toLocaleString()}</p>
-          <form action="/upload-profile" method="POST" enctype="multipart/form-data" class="mt-4">
-            <input type="file" name="profilePicture" accept="image/*">
-            <button type="submit" class="bg-blue-500 text-white px-3 py-1 rounded">Upload</button>
-          </form>
-        </div>
-        <div>
-          <img src="${doctor.profilePicture || "/default-profile.png"}" class="w-32 h-32 rounded-full object-cover border">
-        </div>
+  <!DOCTYPE html>
+  <html>
+  <head>
+    <title>Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+  </head>
+  <body class="bg-gray-100">
+    <nav class="bg-blue-600 text-white p-4 flex justify-between">
+      <div class="text-xl font-bold">DASHBOARD</div>
+      <div><a href="/" class="mx-2">Home</a><a href="/contact.html" class="mx-2">Contact Us</a></div>
+    </nav>
+    <div class="bg-white p-6 shadow rounded mb-4 flex justify-between">
+      <div>
+        <h2 class="text-2xl font-bold">Welcome, Dr. ${doctor.name}</h2>
+        <p>Email: ${doctor.email}</p>
+        <p>Registered on: ${doctor.createdAt.toLocaleString()}</p>
+        <form action="/upload-profile" method="POST" enctype="multipart/form-data" class="mt-4">
+          <input type="file" name="profilePicture" accept="image/*">
+          <button type="submit" class="bg-blue-500 text-white px-3 py-1 rounded">Upload</button>
+        </form>
       </div>
-
-      <div class="mb-4">
-        <a href="/addpatient.html" class="bg-blue-600 text-white px-4 py-2 rounded">➕ Add Patient</a>
-        <a href="/export" class="bg-green-600 text-white px-4 py-2 rounded ml-2">Download Excel</a>
-        <a href="/download-pdf" class="bg-red-600 text-white px-4 py-2 rounded ml-2">Download PDF</a>
+      <div>
+        <img src="${doctor.profilePicture || "/default-profile.png"}" class="w-32 h-32 rounded-full object-cover border">
       </div>
+    </div>
 
-      <table class="min-w-full bg-white border rounded">
-        <thead>
-          <tr>
-            <th class="py-2 px-4 border">Sl. No.</th>
-            <th class="py-2 px-4 border">Name</th>
-            <th class="py-2 px-4 border">Age</th>
-            <th class="py-2 px-4 border">Disease</th>
-            <th class="py-2 px-4 border">Registered At</th>
-          </tr>
-        </thead>
-        <tbody>${patientListHTML}</tbody>
-      </table>
+    <div class="mb-4">
+      <a href="/addpatient.html" class="bg-blue-600 text-white px-4 py-2 rounded">➕ Add Patient</a>
+      <a href="/export" class="bg-green-600 text-white px-4 py-2 rounded ml-2">Download Excel</a>
+      <a href="/download-pdf" class="bg-red-600 text-white px-4 py-2 rounded ml-2">Download PDF</a>
+    </div>
 
-      <footer class="text-center text-sm py-4 mt-8 bg-blue-600 text-white">
-        &copy; 2025 Banashyamnagar Church Doctor Camp System.
-      </footer>
-    </body>
-    </html>
-  `);
+    <table class="min-w-full bg-white border rounded">
+      <thead>
+        <tr>
+          <th class="py-2 px-4 border">Sl. No.</th>
+          <th class="py-2 px-4 border">Name</th>
+          <th class="py-2 px-4 border">Age</th>
+          <th class="py-2 px-4 border">Disease</th>
+          <th class="py-2 px-4 border">Registered At</th>
+        </tr>
+      </thead>
+      <tbody>${rows}</tbody>
+    </table>
+
+    <footer class="text-center text-sm py-4 mt-8 bg-blue-600 text-white">
+      &copy; 2025 Banashyamnagar Church Doctor Camp System.
+    </footer>
+  </body>
+  </html>`);
 });
 
 app.post("/upload-profile", upload.single("profilePicture"), async (req, res) => {
@@ -196,10 +192,16 @@ app.post("/add-patient", async (req, res) => {
   res.redirect("/dashboard");
 });
 
-app.post("/contact", async (req, res) => {
-  res.sendFile(path.join(__dirname, "public/contact.html"));
+app.get("/contact.html", (req, res) => {
+  const html = fs.readFileSync(path.resolve(__dirname, "public/contact.html"), "utf-8");
+  res.send(html);
+});
 
-  if (!name || !email || !message) return res.status(400).send("All fields required.");
+app.post("/contact", async (req, res) => {
+  const { name, email, message } = req.body;
+  if (!name || !email || !message)
+    return res.status(400).send("All fields required.");
+
   await new ContactMessage({ name, email, message }).save();
   res.send(`<h2 style="color:green;text-align:center;">Thanks for your message!</h2><p style="text-align:center;"><a href="/">Back Home</a></p>`);
 });
@@ -210,6 +212,7 @@ app.get("/export", async (req, res) => {
 
   const workbook = new ExcelJS.Workbook();
   const sheet = workbook.addWorksheet("Patients");
+
   sheet.columns = [
     { header: "Sl. No.", key: "slNo" },
     { header: "Name", key: "name" },
@@ -217,9 +220,9 @@ app.get("/export", async (req, res) => {
     { header: "Disease", key: "disease" },
     { header: "Registered At", key: "createdAt" },
   ];
-  patients.forEach((p, i) => sheet.addRow({
-    slNo: i + 1, name: p.name, age: p.age, disease: p.disease, createdAt: p.createdAt
-  }));
+  patients.forEach((p, i) =>
+    sheet.addRow({ slNo: i + 1, name: p.name, age: p.age, disease: p.disease, createdAt: p.createdAt })
+  );
 
   res.setHeader("Content-Type", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
   res.setHeader("Content-Disposition", "attachment; filename=patients.xlsx");
@@ -229,17 +232,24 @@ app.get("/export", async (req, res) => {
 
 app.get("/download-pdf", async (req, res) => {
   if (!req.session.doctorId) return res.redirect("/login");
-  const patients = await Patient.find({ doctorId: req.session.doctorId });
 
+  const patients = await Patient.find({ doctorId: req.session.doctorId });
+  const buffers = [];
   const doc = new PDFDocument();
-  res.setHeader("Content-Disposition", "attachment; filename=patients.pdf");
-  res.setHeader("Content-Type", "application/pdf");
-  doc.pipe(res);
+
+  doc.on("data", buffers.push.bind(buffers));
+  doc.on("end", () => {
+    const pdfData = Buffer.concat(buffers);
+    res.setHeader("Content-Type", "application/pdf");
+    res.setHeader("Content-Disposition", "attachment; filename=patients.pdf");
+    res.send(pdfData);
+  });
 
   doc.fontSize(16).text("Patient List", { align: "center" }).moveDown();
   patients.forEach((p, i) => {
     doc.fontSize(12).text(`${i + 1}. ${p.name}, Age: ${p.age}, Disease: ${p.disease}, Registered: ${p.createdAt.toLocaleString()}`).moveDown(0.5);
   });
+
   doc.end();
 });
 
