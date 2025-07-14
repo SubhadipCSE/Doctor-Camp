@@ -1,0 +1,57 @@
+<!-- public/login.html -->
+<!-- <!DOCTYPE html>
+<html>
+<head><title>Doctor Login</title></head>
+<body>
+  <h2>Doctor Login</h2>
+  <form action="/login" method="POST">
+    Email: <input type="email" name="email" required /><br />
+    Password: <input type="password" name="password" required /><br />
+    <button type="submit">Login</button>
+  </form>
+</body>
+</html> -->
+<!-- THIS IS THE INDEX.HTML FILE FOR THE BANASHYAMNAGAR CHARCH PATIENT REGISTRATION SYSTEM -->
+<!-- THIS WEBSITE WILL BE RESPONSIVE AND THIS PAGE IS THE LOGIN PAGE FOR THE BANASHYAMNAGAR CHARCH PATIENT REGISTRATION SYSTEM -->
+<!-- USE TAILWIND CSS TO STYLE THIS PAGE -->
+ <!DOCTYPE html>
+ <html lang="en">
+ <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>USERS LOGIN</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+ </head>
+ <body>
+    <header class="bg-blue-500 text-white py-4">
+      <div class="container mx-auto">
+        <h1 class="text-2xl font-bold text-center">
+          BANASHYAMNAGAR CHARCH DOCTOR CAMP SYSTEM
+        </h1>
+      </div>
+    </header>
+    <form action="/login" method="POST" class="max-w-md mx-auto bg-white p-8 mt-10 rounded-lg shadow-md">
+      <h2 class="text-2xl font-bold mb-6 text-center text-purple-500 bg-blue-600 p-4 rounded-lg">User Login</h2>
+      <div class="mb-4">
+        <label for="email" class="block text-sm font-medium text-gray-700">Email</label>
+        <input type="email" name="email" required class="mt-1 block w-full border border-gray-300 rounded-md p-2" />
+      </div>
+      <div class="mb-4">
+        <label for="password" class="block text-sm font-medium text-gray-700">Password</label>
+        <input type="password" name="password" required class="mt-1 block w-full border border-gray-300 rounded-md p-2" />
+      </div>
+      <button type="submit" class="w-full bg-blue-500 text-white py-2 rounded-md hover:bg-blue-600">Login</button>
+
+      <div class="mt-4">
+        <span>Don't have an account? </span><a href="/register" class="text-blue-500 hover:underline">Register</a>
+      </div>
+      <button type="reset" class="w-full bg-gray-500 text-white py-2 rounded-md hover:bg-gray-600">Reset</button>
+      
+    </form>
+    <footer class="bg-blue-600 text-white text-center py-4 mt-10 position-fixed bottom-0 w-full">
+<p class="text-sm">
+ This is a data entry system &copy; 2025 Banashyamnagar Church Doctor Camp System. All rights reserved as per the terms and conditions and privacy policy according to the government regulations act 2025.
+</p>
+</footer>
+ </body>
+ </html>

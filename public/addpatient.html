@@ -1,0 +1,49 @@
+<!-- THIS IS THE INDEX.HTML FILE FOR THE BANASHYAMNAGAR CHARCH PATIENT REGISTRATION SYSTEM -->
+<!-- THIS WEBSITE WILL BE RESPONSIVE AND THIS PAGE IS THE DASHBOARD PAGE FOR THE BANASHYAMNAGAR CHARCH PATIENT REGISTRATION SYSTEM -->
+<!-- USE TAILWIND CSS TO STYLE THIS PAGE -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ADD PATIENTS</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body>
+    <header class="bg-blue-500 text-white py-4">
+      <div class="container mx-auto">
+        <h1 class="text-2xl font-bold text-center">
+          BANASHYAMNAGAR CHARCH DOCTOR CAMP SYSTEM
+        </h1>
+      </div>
+    </header>
+    <form action="/add-patient" method="POST" class="max-w-md mx-auto bg-white p-8 mt-10 rounded-lg shadow-md">
+      <h2 class="text-2xl font-bold mb-6 text-center">Add Patient</h2>
+      <div class="mb-4">
+        <label for="name" class="block text-sm font-medium text-gray-700">Name</label>
+        <input type="text" name="name" required class="mt-1 block w-full border border-gray-300 rounded-md p-2" />
+      </div>
+      <div class="mb-4">
+        <label for="age" class="block text-sm font-medium text-gray-700">Age</label>
+        <input type="number" name="age" required class="mt-1 block w-full border border-gray-300 rounded-md p-2" />
+      </div>
+      <div class="mb-4">
+        <label for="disease" class="block text-sm font-medium text-gray-700">Disease</label>
+        <input type="radio" name="disease" value="Operation" class="mt-1 mr-2" /> Operation
+        <input type="radio" name="disease" value="Narve" class="mt-1 mr-2" /> Narve
+        <input type="radio" name="disease" value="Stomach + Skin" class="mt-1 mr-2" /> Stomach + Skin
+        <input type="radio" name="disease" value="Dentist" class="mt-1 mr-2" /> Dentist
+        <input type="radio" name="disease" value="Joint" class="mt-1 mr-2" /> Joint
+    </div>
+      <button type="submit" class="w-full bg-blue-500 text-white py-2 rounded-md hover:bg-blue-600">Add Patient</button>
+    </form>
+
+    <br /><a href="/export" class="text-blue-500 hover:underline text-center">Export Patient List to Excel</a>
+     <footer class="bg-blue-600 text-white text-center py-4 mt-10 position-fixed bottom-0 w-full">
+  <p class="text-sm">
+    This is a data entry system &copy; 2025 Banashyamnagar Church Doctor Camp System. All rights reserved as per the terms and conditions and privacy policy according to the government regulations act 2025.
+  </p>
+</footer>
+
+</body>
+</html>
